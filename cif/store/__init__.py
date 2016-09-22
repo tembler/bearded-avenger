@@ -140,7 +140,8 @@ class Store(object):
     # TODO group check
     def handle_indicators_create(self, token, data):
         if self.store.token_write(token):
-            return self.store.indicators_upsert(token, data)
+            #return self.store.indicators_upsert(token, data)
+            return self.store.indicators_create(token, data)
         else:
             raise AuthError('invalid token')
 
