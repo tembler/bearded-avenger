@@ -238,59 +238,6 @@ class SQLite(Store):
 
         return [self._as_dict(x) for x in rv]
 
-    def indicators_upsert(self, token, data):
-        if not self.token_write(token):
-            raise AuthError('invalid token')
-
-        if type(data) == dict:
-            data = [data]
-
-        s = self.handle()
-        n = 0
-
-        for d in data:
-            tags = d.get("tags", [])
-            if len(tags) > 0:
-                if isinstance(tags, basestring):
-                    if '.' in tags:
-                        tags = tags.split(',')
-                    else:
-                        tags = [str(tags)]
-
-                del d['tags']
-
-            i = s.query(Indicator).filter_by(
-                indicator=d['indicator'],
-                provider=d['provider'],
-            ).order_by(Indicator.lasttime.desc())
-
-            if i.count() > 0:
-                r = i.first()
-                if arrow.get(r.lasttime).datetime > arrow.get(d['lasttime']).datetime:
-                    self.logger.debug('{} {}'.format(arrow.get(r.lasttime).datetime, arrow.get(d['lasttime']).datetime))
-                    self.logger.debug('upserting: %s' % d['indicator'])
-                    r.count += 1
-                    r.lasttime = arrow.get(d['lasttime']).datetime
-                    r.reporttime = arrow.get(d['reporttime']).datetime
-                    n += 1
-                else:
-                    self.logger.debug('skipping: %s' % d['indicator'])
-            else:
-                if not d.get('firsttime'):
-                    d['firsttime'] = arrow.utcnow().datetime
-                ii = Indicator(**d)
-                s.add(ii)
-
-                for t in tags:
-                    t = Tag(tag=t, indicator=ii)
-                    s.add(t)
-
-                n += 1
-
-        self.logger.debug('committing')
-        s.commit()
-        return n
-
     def indicators_create(self, token, data):
         if self.token_write(token):
             if type(data) == dict:
