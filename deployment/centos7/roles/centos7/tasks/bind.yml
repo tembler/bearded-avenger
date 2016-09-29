@@ -8,11 +8,11 @@
 - name: restart named
   command: systemctl restart named
 
-- name: update NetworkManager.conf
-  lineinfile: dest=/etc/NetworkManager/NetworkManager.conf line="dns=none"
+#- name: update NetworkManager.conf
+#  lineinfile: dest=/etc/NetworkManager/NetworkManager.conf line="dns=none"
 
-- name: restart NetworkManager
-  command: systemctl restart NetworkManager
+#- name: restart NetworkManager
+#  command: systemctl restart NetworkManager
 
 - name: "Restart networking"
   command: systemctl restart network

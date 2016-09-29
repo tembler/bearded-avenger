@@ -6,5 +6,5 @@
 - name: create /etc/GeoIP.conf
   template: src=GeoIP.conf.j2 dest=/etc/GeoIP.conf owner=root group=root mode=0660
 
-- name: update geoip databases
-  command: geoipupdate -v
+#- name: update geoip databases
+#  command: geoipupdate -v
